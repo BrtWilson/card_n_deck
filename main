@@ -1,0 +1,65 @@
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+import Card_n_Deck.Deck;
+
+public class main {
+
+    public static void main(String[] args) {
+        ArrayList<Deck> deck_set = new ArrayList<>();
+        try {
+            for (int i = 0; i < args.length; i++) {
+                List<List<String>> card_set = new ArrayList<>();
+                List<String> card_list = Files.readAllLines(Paths.get(args[i]), StandardCharsets.UTF_8);
+                for(String card_row: card_list) {
+                    card_set.add(List.of(card_row.split("\t")));
+                }
+                deck_set.add( Deck.convert_to_deck(card_set) );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Deck complete_deck = Deck.combine(deck_set);
+        complete_deck.shuffle();
+        //System.out.println(complete_deck);
+
+        Scanner in = new Scanner(System.in);
+        String s = "";
+        while (!s.equals("q")) {
+            s = in.nextLine();
+            if (s.equals("draw")) {
+                System.out.println( complete_deck.draw() );
+            }
+            else if (s.equals("peek")) {
+                System.out.println( complete_deck.peek() );
+            }
+            else if (s.equals("shuffle")) {
+                complete_deck.shuffle();
+            }
+            else if (s.equals("peek x")) {
+                System.out.println("Enter amount: ");
+                int x = in.nextInt();
+                System.out.println(Arrays.toString(complete_deck.peek(x)));
+            }
+            else if (s.equals("type")) {
+                System.out.println("Enter type: ");
+                String t = in.nextLine();
+                System.out.println(complete_deck.getNextOfType(t));
+            }
+            else if (s.equals("attribute")) {
+                System.out.println("Enter attribute: ");
+                String a = in.nextLine();
+                System.out.println("Enter match: ");
+                String m = in.nextLine();
+                System.out.println(complete_deck.getNextOfAttribute(a,m));
+            }
+        }
+        // TODO: deal
+        // TODO: save state after each action (for game setup)
+    }
+}
